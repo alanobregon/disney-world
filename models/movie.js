@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Movie.belongsTo(models.Gender, { foreignKey: "genderId", as: "gender" });
       Movie.belongsToMany(models.Character, {
-        through: "character_movies",
+        through: "CharacterMovie",
         foreignKey: "movieId",
-        as: "movies",
+        as: "characters",
       });
     }
   }
