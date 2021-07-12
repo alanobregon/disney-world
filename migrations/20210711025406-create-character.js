@@ -11,9 +11,6 @@ module.exports = {
       name: {
         type: Sequelize.STRING(100),
       },
-      image: {
-        type: Sequelize.BLOB("long"),
-      },
       age: {
         type: Sequelize.INTEGER,
       },

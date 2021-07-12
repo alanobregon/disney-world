@@ -11,9 +11,6 @@ module.exports = {
       title: {
         type: Sequelize.STRING,
       },
-      image: {
-        type: Sequelize.BLOB("long"),
-      },
       score: {
         type: Sequelize.INTEGER,
       },
