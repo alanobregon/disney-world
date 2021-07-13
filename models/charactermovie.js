@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      CharacterMovie.belongsTo(models.Movie, { foreignKey: "movieId" });
-      CharacterMovie.belongsTo(models.Character, { foreignKey: "characterId" });
+      CharacterMovie.belongsTo(models.Movie, { foreignKey: "movieId", onDelete: "cascade" });
+      CharacterMovie.belongsTo(models.Character, { foreignKey: "characterId", onDelete: "cascade" });
     }
   }
   CharacterMovie.init(
