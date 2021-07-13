@@ -7,6 +7,7 @@ const { Character } = require("../models");
 router.get("/", async (request, response) => {
   const characters = await Character.findAll({
     attributes: ["id", "name"],
+    where: request.query,
   });
   response.json({
     characters,
