@@ -9,14 +9,16 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       score: {
+        allowNull: false,
         type: Sequelize.INTEGER,
       },
       genderId: {
-        type: Sequelize.INTEGER,
         allowNull: false,
+        type: Sequelize.INTEGER,
         references: {
           model: "Genders",
           key: "id",
