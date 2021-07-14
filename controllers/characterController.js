@@ -78,14 +78,78 @@ router.put("/:id", async (request, response) => {
     });
   }
 
-  character.update(request.body,{
+  character.update(request.body, {
     returning: true,
-    plain: true
+    plain: true,
   });
-  
+
   response.json({
     message: "character updated successfully",
     character,
+  });
+});
+
+router.put("/:id/movies/add", async (request, response) => {
+  const character = await Character.findOne({
+    where: { id: request.params.id },
+  });
+
+  if (!character) {
+    return response.status(404).json({
+      status: "not found",
+      message: "character not found",
+    });
+  }
+
+  const { movies } = request.body;
+  if (!movies) {
+    return response.status(404).json({
+      status: "not found",
+      message: "movies data is empty",
+    });
+  }
+
+  movies.map(async (movie) => {
+    if (!(await character.hasMovie(movie))) {
+      character.addMovie(movie);
+    }
+  });
+
+  response.status(200).json({
+    status: "ok",
+    message: "movies added successfully",
+  });
+});
+
+router.put("/:id/movies/remove", async (request, response) => {
+  const character = await Character.findOne({
+    where: { id: request.params.id },
+  });
+
+  if (!character) {
+    return response.status(404).json({
+      status: "not found",
+      message: "character not found",
+    });
+  }
+
+  const { movies } = request.body;
+  if (!movies) {
+    return response.status(404).json({
+      status: "not found",
+      message: "movies data is empty",
+    });
+  }
+
+  movies.map(async (movie) => {
+    if (await character.hasMovie(movie)) {
+      character.removeMovie(movie);
+    }
+  });
+
+  response.status(200).json({
+    status: "ok",
+    message: "movies removed successfully",
   });
 });
 
