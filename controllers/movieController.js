@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var { check, body, validationResult } = require("express-validator");
 
-const { Movie, Gender } = require("../models");
+const { Movie, Gender, Character } = require("../models");
 
 router.get("/", async (request, response) => {
   const movies = await Movie.findAll({
@@ -21,6 +21,10 @@ router.post(
     check("title", "title field is required").not().isEmpty(),
     check("score", "score field is required").not().isEmpty(),
     check("score", "score field require a number").isNumeric(),
+    check("score", "score field must be a number between 1 and 5").isFloat({
+      min: 1,
+      max: 5,
+    }),
     check("genderId", "genderId field is required").not().isEmpty(),
     check("genderId", "genderId field require a number").isNumeric(),
     body("genderId").custom((value) => {
@@ -49,7 +53,19 @@ router.post(
 router.get("/:id", async (request, response) => {
   const movie = await Movie.findOne({
     where: { id: request.params.id },
-    include: ["gender", "characters"],
+    attributes: ["id", "title", "score", "createdAt", "updatedAt"],
+    include: [
+      {
+        model: Gender,
+        as: "gender",
+        attributes: ["id", "name"],
+      },
+      {
+        model: Character,
+        as: "characters",
+        attributes: ["id", "name"],
+      },
+    ],
   });
 
   if (!movie) {
@@ -67,8 +83,8 @@ router.get("/:id", async (request, response) => {
 
 router.put("/:id", async (request, response) => {
   const movie = await Movie.findOne({
-    where: { id: request.params.id }
-  })
+    where: { id: request.params.id },
+  });
 
   if (!movie) {
     return response.status(404).json({
@@ -77,18 +93,15 @@ router.put("/:id", async (request, response) => {
     });
   }
 
-  const { title, score, genderId } = request.body
-  movie.update({
-    title,
-    score,
-    genderId
-  })
+  movie.update(request.body, {
+    returning: true,
+    plain: true,
+  });
 
-  movie.save();
   response.status(200).json({
     status: "ok",
     movie,
-  })
+  });
 });
 
 router.delete("/:id", async (request, response) => {
@@ -103,7 +116,7 @@ router.delete("/:id", async (request, response) => {
     });
   }
 
-  movie.destroy();
+  movie.destroy({ cascade: true });
   response.status(200).json({
     status: "ok",
     movie,
