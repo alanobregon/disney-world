@@ -104,6 +104,70 @@ router.put("/:id", async (request, response) => {
   });
 });
 
+router.put("/:id/characters/add", async (request, response) => {
+  const movie = await Movie.findOne({
+    where: { id: request.params.id },
+  });
+
+  if (!movie) {
+    return response.status(404).json({
+      status: "not found",
+      message: "movie not found",
+    });
+  }
+
+  const { characters } = request.body;
+  if (!characters) {
+    return response.status(404).json({
+      status: "not found",
+      message: "characters data is empty",
+    });
+  }
+
+  characters.map(async (character) => {
+    if (!(await movie.hasCharacter(character))) {
+      movie.addCharacter(character);
+    }
+  });
+
+  response.status(200).json({
+    status: "ok",
+    message: "characters added successfully",
+  });
+});
+
+router.put("/:id/characters/remove", async (request, response) => {
+  const movie = await Movie.findOne({
+    where: { id: request.params.id },
+  });
+
+  if (!movie) {
+    return response.status(404).json({
+      status: "not found",
+      message: "movie not found",
+    });
+  }
+
+  const { characters } = request.body;
+  if (!characters) {
+    return response.status(404).json({
+      status: "not found",
+      message: "characters data is empty",
+    });
+  }
+
+  characters.map(async (character) => {
+    if (await movie.hasCharacter(character)) {
+      movie.removeCharacter(character);
+    }
+  });
+
+  response.status(200).json({
+    status: "ok",
+    message: "characters removed successfully",
+  });
+})
+
 router.delete("/:id", async (request, response) => {
   const movie = await Movie.findOne({
     where: { id: request.params.id },
