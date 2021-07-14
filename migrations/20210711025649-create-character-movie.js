@@ -10,6 +10,8 @@ module.exports = {
       },
       characterId: {
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
         allowNull: false,
         references: {
           model: "Characters",
@@ -18,6 +20,8 @@ module.exports = {
       },
       movieId: {
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
         allowNull: false,
         references: {
           model: "Movies",
