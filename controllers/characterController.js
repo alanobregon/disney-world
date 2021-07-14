@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var { check, body, validationResult } = require("express-validator");
 
-const { Character } = require("../models");
+const { Character, Movie } = require("../models");
 
 router.get("/", async (request, response) => {
   const characters = await Character.findAll({
@@ -46,7 +46,14 @@ router.post(
 router.get("/:id", async (request, response) => {
   const character = await Character.findOne({
     where: { id: request.params.id },
-    include: "movies",
+    attributes: ["id", "name", "age", "weight", "createdAt", "updatedAt"],
+    include: [
+      {
+        model: Movie,
+        as: "movies",
+        attributes: ["id", "title"],
+      },
+    ],
   });
 
   if (!character) {
