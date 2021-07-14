@@ -78,15 +78,11 @@ router.put("/:id", async (request, response) => {
     });
   }
 
-  const { name, age, weight, story } = request.body;
-  character.update({
-    name,
-    age,
-    weight,
-    story,
+  character.update(request.body,{
+    returning: true,
+    plain: true
   });
-
-  character.save();
+  
   response.json({
     message: "character updated successfully",
     character,
