@@ -1,14 +1,42 @@
 var express = require("express");
+var Op = require("sequelize").Op;
 var router = express.Router();
 var { check, body, validationResult } = require("express-validator");
 
 const { Character, Movie } = require("../models");
 
 router.get("/", async (request, response) => {
+  const filter = {};
+  if (request.query.name) {
+    filter.name = { [Op.like]: `%${request.query.name}%` };
+  }
+  if (request.query.age) {
+    filter.age = request.query.age;
+  }
+  if (request.query.movies) {
+    const movie = await Movie.findOne({
+      where: { id: request.query.movies },
+    });
+
+    if (!movie) {
+      return response.status(404).json({
+        status: "not found",
+        message: "movie not found",
+      });
+    }
+
+    return response.json({
+      characters: await movie.getCharacters({
+        where: filter,
+      }),
+    });
+  }
+
   const characters = await Character.findAll({
     attributes: ["id", "name"],
-    where: request.query,
+    where: filter,
   });
+  
   response.json({
     characters,
   });
