@@ -1,13 +1,30 @@
 var express = require("express");
+var Op = require("sequelize").Op;
 var router = express.Router();
 var { check, body, validationResult } = require("express-validator");
 
 const { Movie, Gender, Character } = require("../models");
 
 router.get("/", async (request, response) => {
+  const filter = {};
+  let order = "ASC";
+
+  if (request.query.title) {
+    filter.title = { [Op.like]: `%${request.query.title}%` };
+  }
+  if (request.query.gender) {
+    filter.genderId = request.query.gender;
+  }
+  if (request.query.order) {
+    order = request.query.order;
+  }
+
   const movies = await Movie.findAll({
     attributes: ["id", "title", "createdAt"],
-    where: request.query,
+    where: filter,
+    order: [
+      [ "id", order]
+    ],
   });
 
   response.status(200).json({
@@ -166,7 +183,7 @@ router.put("/:id/characters/remove", async (request, response) => {
     status: "ok",
     message: "characters removed successfully",
   });
-})
+});
 
 router.delete("/:id", async (request, response) => {
   const movie = await Movie.findOne({
