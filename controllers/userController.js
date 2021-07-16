@@ -2,6 +2,12 @@ var bcrypt = require("bcryptjs");
 var express = require("express");
 var { check, body, validationResult } = require("express-validator");
 
+const sgMail = require("@sendgrid/mail");
+// Cambiar por process.env.SENDGRID_APIKEY
+sgMail.setApiKey(
+  "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"
+);
+
 var jwt = require("jwt-simple");
 var moment = require("moment");
 
@@ -30,6 +36,22 @@ router.post(
         errors: errors.array(),
       });
     }
+
+    const msg = {
+      to: request.body.email,
+      from: "alanobregn@gmail.com", // Cambiar por process.env.SENDGRID_SENDER_EMAIL
+      subject: "Welcome to Disney World App",
+      html: "<strong>This message was sending with SendGrid and Node.js for Alkemy Labs' Backend Challenge with Node.js</strong>",
+    };
+
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log("email sent");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     request.body.password = bcrypt.hashSync(request.body.password, 10);
     const user = await User.create(request.body);
