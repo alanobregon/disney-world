@@ -12,6 +12,11 @@ git clone https://github.com/Alan49/disney-world.git
 cd disney-world
 npm install
 
+# Rename the .env.example to .env
+# and change the values for your 
+# database settings
+# and SendGrid API_KEY and SENDER
+
 # Migrations and seeds
 sequelize db:create
 sequelize db:migrate
